@@ -1,0 +1,56 @@
+{
+  "sourceLanguage": "en",
+  "version": "1.0",
+  "strings": {
+    "Continue in ${applicationName}": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Продолжи в ${applicationName}"
+          }
+        }
+      }
+    },
+    "Resume ${applicationName}": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Продолжи просмотр в ${applicationName}"
+          }
+        }
+      }
+    },
+    "Play latest from ${channel} in ${applicationName}": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Включи последнее видео ${channel} в ${applicationName}"
+          }
+        }
+      }
+    },
+    "Latest video from ${channel} in ${applicationName}": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Последнее видео ${channel} в ${applicationName}"
+          }
+        }
+      }
+    },
+    "What's new on ${channel} in ${applicationName}": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Что нового у ${channel} в ${applicationName}"
+          }
+        }
+      }
+    }
+  }
+}

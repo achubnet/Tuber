@@ -1,0 +1,12 @@
+*.log
+*.xcodeproj/
+.DS_Store
+DerivedData/
+Local.xcconfig
+build.log
+build/
+console.log
+device.log
+docs/
+run.log
+xcuserdata/

@@ -1,0 +1,576 @@
+{
+  "sourceLanguage": "en",
+  "version": "1.0",
+  "strings": {
+    "Feed": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Лента"
+          }
+        }
+      }
+    },
+    "Channels": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Каналы"
+          }
+        }
+      }
+    },
+    "Search": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Поиск"
+          }
+        }
+      }
+    },
+    "Videos": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Видео"
+          }
+        }
+      }
+    },
+    "Settings": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Настройки"
+          }
+        }
+      }
+    },
+    "Watch later": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Смотреть позже"
+          }
+        }
+      }
+    },
+    "No channels yet": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Пока нет каналов"
+          }
+        }
+      }
+    },
+    "Find channels in Search and subscribe.": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Найдите каналы в поиске и подпишитесь."
+          }
+        }
+      }
+    },
+    "Hide watched": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Скрыть просмотренные"
+          }
+        }
+      }
+    },
+    "Remove from Watch later": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Убрать из «Смотреть позже»"
+          }
+        }
+      }
+    },
+    "Mark as unwatched": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Отметить как непросмотренное"
+          }
+        }
+      }
+    },
+    "Mark as watched": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Отметить как просмотренное"
+          }
+        }
+      }
+    },
+    "Retry": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Повторить"
+          }
+        }
+      }
+    },
+    "Subscribed": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Вы подписаны"
+          }
+        }
+      }
+    },
+    "Subscribe": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Подписаться"
+          }
+        }
+      }
+    },
+    "Could not load the video": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Не удалось загрузить видео"
+          }
+        }
+      }
+    },
+    "Sponsor": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Спонсор"
+          }
+        }
+      }
+    },
+    "Self-promo": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Самореклама"
+          }
+        }
+      }
+    },
+    "Reminder": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Призыв подписаться"
+          }
+        }
+      }
+    },
+    "Intro": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Интро"
+          }
+        }
+      }
+    },
+    "Outro": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Концовка"
+          }
+        }
+      }
+    },
+    "Preview": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Анонс"
+          }
+        }
+      }
+    },
+    "Non-music": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Не музыка"
+          }
+        }
+      }
+    },
+    "Filler": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Отступление"
+          }
+        }
+      }
+    },
+    "Channels, videos or a link": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Каналы, видео или ссылка"
+          }
+        }
+      }
+    },
+    "Skip automatically": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Пропускать автоматически"
+          }
+        }
+      }
+    },
+    "Segment data comes from SponsorBlock.": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Данные об отрезках берутся из SponsorBlock."
+          }
+        }
+      }
+    },
+    "Channel": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Канал"
+          }
+        }
+      }
+    },
+    "Continue watching": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Продолжить просмотр"
+          }
+        }
+      }
+    },
+    "Play latest video": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Включить последнее видео"
+          }
+        }
+      }
+    },
+    "What's new on a channel": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Что нового на канале"
+          }
+        }
+      }
+    },
+    "No new videos on %@.": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "На канале %@ нет новых видео."
+          }
+        }
+      }
+    },
+    "Latest on %@: %@": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Новое на канале %1$@: %2$@"
+          }
+        }
+      }
+    },
+    "Latest from channel": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Последнее с канала"
+          }
+        }
+      }
+    },
+    "What's new": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Что нового"
+          }
+        }
+      }
+    },
+    "My channels": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Мои каналы"
+          }
+        }
+      }
+    },
+    "Everywhere": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Везде"
+          }
+        }
+      }
+    },
+    "Search channels": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Поиск каналов"
+          }
+        }
+      }
+    },
+    "Language": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Язык"
+          }
+        }
+      }
+    },
+    "System": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Как в системе"
+          }
+        }
+      }
+    },
+    "Takes effect after you restart the app.": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Применится после перезапуска приложения."
+          }
+        }
+      }
+    },
+    "Playback speed": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Скорость воспроизведения"
+          }
+        }
+      }
+    },
+    "Normal": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Обычная"
+          }
+        }
+      }
+    },
+    "Hide": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Скрыть"
+          }
+        }
+      }
+    },
+    "Show in feed": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Показывать в ленте"
+          }
+        }
+      }
+    },
+    "Mark all as watched": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Отметить все как просмотренные"
+          }
+        }
+      }
+    },
+    "Mark all videos of this channel as watched?": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Отметить все видео этого канала как просмотренные?"
+          }
+        }
+      }
+    },
+    "Import subscriptions from YouTube": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Импорт подписок из YouTube"
+          }
+        }
+      }
+    },
+    "Get subscriptions.csv at takeout.google.com: choose only “YouTube and YouTube Music”, then “subscriptions”. Unzip it in Files and pick the CSV here.": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Скачайте subscriptions.csv на takeout.google.com: выберите только «YouTube и YouTube Music», затем «подписки». Распакуйте архив в «Файлах» и выберите CSV здесь."
+          }
+        }
+      }
+    },
+    "Added channels: %lld": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Добавлено каналов: %lld"
+          }
+        }
+      }
+    },
+    "Could not read the file": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Не удалось прочитать файл"
+          }
+        }
+      }
+    },
+    "Hide from feed": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Не показывать в ленте"
+          }
+        }
+      }
+    },
+    "Find channels in Search and subscribe, or import your YouTube subscriptions.": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Найдите каналы в поиске или импортируйте подписки из YouTube."
+          }
+        }
+      }
+    },
+    "Import from YouTube": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Импорт из YouTube"
+          }
+        }
+      }
+    },
+    "Import subscriptions": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Импорт подписок"
+          }
+        }
+      }
+    },
+    "A text file with one channel per line: @handle, channel link or ID. Put “-” before a channel to subscribe without showing it in the feed. subscriptions.csv from Google Takeout works too.": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Текстовый файл, по одному каналу на строку: @имя, ссылка на канал или ID. «-» перед каналом: подписаться, но не показывать в ленте. Файл subscriptions.csv из Google Takeout тоже подходит."
+          }
+        }
+      }
+    },
+    "Added: %lld, updated: %lld, not found: %lld": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Добавлено: %lld, обновлено: %lld, не найдено: %lld"
+          }
+        }
+      }
+    }
+  }
+}
