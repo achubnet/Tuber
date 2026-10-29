@@ -571,6 +571,16 @@
           }
         }
       }
+    },
+    "Show hidden videos": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Показать скрытые видео"
+          }
+        }
+      }
     }
   }
 }

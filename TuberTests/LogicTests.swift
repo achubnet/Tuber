@@ -18,6 +18,14 @@ final class LogicTests: XCTestCase {
         XCTAssertNil(VideoLink.videoID(from: URL(string: "https://example.com/watch?v=\(id)")!))
     }
 
+    @MainActor func testChannelPageHidesHiddenVideos() {
+        let a = Video(id: "AAAAAAAAAAA", channelID: "UC1", channelTitle: "C", title: "A")
+        let b = Video(id: "BBBBBBBBBBB", channelID: "UC1", channelTitle: "C", title: "B")
+        b.hidden = true
+        XCTAssertEqual(ChannelView.visible([a, b], showHidden: false).map { $0.id }, ["AAAAAAAAAAA"])
+        XCTAssertEqual(ChannelView.visible([a, b], showHidden: true).map { $0.id }, ["AAAAAAAAAAA", "BBBBBBBBBBB"])
+    }
+
     func testVideoIDValidation() {
         XCTAssertTrue(VideoLink.isValidID("dQw4w9WgXcQ"))
         XCTAssertTrue(VideoLink.isValidID("a-b_c123XYZ"))

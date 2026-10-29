@@ -109,6 +109,7 @@ struct ChannelView: View {
     @Query private var channels: [Channel]
     @Environment(\.modelContext) private var context
     @State private var confirmMarkAll = false
+    @State private var showHidden = false
 
     init(ref: ChannelRef) {
         self.ref = ref
@@ -120,7 +121,7 @@ struct ChannelView: View {
         let subscribed = channels.first { $0.id == ref.id }
         let channel = Channel(id: ref.id, title: ref.title)
         List {
-            ForEach(videos) { video in
+            ForEach(Self.visible(videos, showHidden: showHidden)) { video in
                 VideoCard(video: video)
                     .videoActions(video)
                     .listRowSeparator(.hidden)
@@ -136,6 +137,7 @@ struct ChannelView: View {
         .toolbar {
             Menu {
                 Button("Mark all as watched", systemImage: "checkmark.circle") { confirmMarkAll = true }
+                Toggle("Show hidden videos", systemImage: "eye", isOn: $showHidden)
                 if let subscribed {
                     Toggle("Hide from feed", systemImage: "eye.slash", isOn: Binding(
                         get: { subscribed.hiddenFromFeed },
@@ -157,6 +159,11 @@ struct ChannelView: View {
             Button("Mark all as watched") { markAllWatched(subscribed) }
         }
         .task { await FeedService.refresh(channels: [Channel(id: ref.id, title: ref.title)], context: context) }
+    }
+
+    /// Hidden videos disappear here too, unless the user asks to see them again.
+    static func visible(_ videos: [Video], showHidden: Bool) -> [Video] {
+        showHidden ? videos : videos.filter { !$0.hidden }
     }
 
     private func markAllWatched(_ channel: Channel?) {
