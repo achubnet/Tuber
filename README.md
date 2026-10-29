@@ -30,6 +30,11 @@ Two kinds of interruptions get between you and a video:
 1. **Ads** that the platform plays before and during a video. Tuber plays the video stream directly, so there are none.
 2. **Sponsor reads** that creators record into the video itself: "This video is sponsored by...". Even YouTube Premium makes you sit through them. Tuber skips them automatically using crowd-sourced timestamps from [SponsorBlock](https://sponsor.ajay.app).
 
+<p align="center">
+  <img src="Screenshots/sponsor-skip.gif" width="360" alt="A sponsor read starts at 14:26 and Tuber jumps straight to 15:52, showing a small Sponsor badge">
+  <br><sub>The sponsor read starts at 14:26. Tuber jumps to 15:52 on its own and shows a small “Sponsor” badge.</sub>
+</p>
+
 And the official app is built to keep you scrolling. Tuber is built for watching: one feed of only the channels you subscribed to, without Shorts or suggestions.
 
 ## Features
