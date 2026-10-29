@@ -5,8 +5,8 @@
 <h1 align="center">Tuber</h1>
 
 <p align="center">
-  A calm, native iOS player for the YouTube channels <i>you</i> choose.<br>
-  No recommendations rabbit hole. Sponsor segments skipped. Picks up where you left off.
+  <b>Skips what even YouTube Premium can’t: the sponsor reads inside videos.</b><br>
+  No ads. No Shorts. No recommendations. Just the channels <i>you</i> choose, in a native iOS player.
 </p>
 
 <p align="center">
@@ -25,14 +25,19 @@
 
 ## Why
 
-The official app is built to keep you scrolling. Tuber is built for watching: a feed of only the channels you subscribed to, no Shorts, no suggestions, and sponsor reads skipped automatically.
+Two kinds of interruptions get between you and a video:
+
+1. **Ads** that the platform plays before and during a video. Tuber plays the video stream directly, so there are none.
+2. **Sponsor reads** that creators record into the video itself: "This video is sponsored by...". Even YouTube Premium makes you sit through them. Tuber skips them automatically using crowd-sourced timestamps from [SponsorBlock](https://sponsor.ajay.app).
+
+And the official app is built to keep you scrolling. Tuber is built for watching: one feed of only the channels you subscribed to, without Shorts or suggestions.
 
 ## Features
 
+- **Sponsor reads skipped automatically.** Sponsor segments, self-promotion and "like and subscribe" reminders are jumped over and marked green on the timeline, with a small "Sponsor" badge when it happens. Pick the categories in Settings.
+- **No ads.** The video stream plays directly in a native player.
 - **Your channels only.** Subscribe without a Google account. Search channels and videos, or share a link from any app into Tuber.
-- **One feed** of all subscriptions, newest first. Infinite scroll loads older videos without the list jumping.
-- **No Shorts**, anywhere.
-- **SponsorBlock built in.** Sponsor reads, self-promotion and "like and subscribe" reminders are skipped and marked on the timeline. Pick the categories in Settings.
+- **One feed** of all subscriptions, newest first, **no Shorts** anywhere. Infinite scroll loads older videos without the list jumping.
 - **Native player** on AVKit: background audio, lock screen and Control Center controls, Picture in Picture, AirPlay.
 - **YouTube-style gestures:** double tap left or right to seek 5 seconds, press and hold for 2x, speed menu from 0.25x to 2x.
 - **Remembers everything:** playback position per video, watched state, Watch later, hidden videos, "mark all as watched" per channel, channels hidden from the feed.
