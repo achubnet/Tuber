@@ -56,7 +56,7 @@ And the official app is built to keep you scrolling. Tuber is built for watching
 Requirements: a Mac with Xcode 27 or newer, an iPhone on iOS 26.1 or newer, and [XcodeGen](https://github.com/yonaskolb/XcodeGen) (`brew install xcodegen`).
 
 ```bash
-git clone https://github.com/skriptoff/Tuber.git
+git clone https://github.com/achubnet/Tuber.git
 cd Tuber
 cp Local.xcconfig.example Local.xcconfig   # put your Team ID and bundle prefix here
 xcodegen generate
