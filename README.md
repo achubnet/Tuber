@@ -17,9 +17,7 @@
 </p>
 
 <p align="center">
-  <img src="Screenshots/feed.png" width="250" alt="Feed">
-  <img src="Screenshots/player.png" width="250" alt="Player">
-  <img src="Screenshots/search.png" width="250" alt="Channel search">
+  <img src="Screenshots/showcase.png" alt="Tuber: feed of your channels, player skipping a sponsor segment, channel search with one-tap subscribe">
 </p>
 
 > **Personal and educational project.** Tuber is not affiliated with, endorsed by or connected to Google or YouTube.
