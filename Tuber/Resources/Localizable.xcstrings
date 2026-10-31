@@ -581,6 +581,86 @@
           }
         }
       }
+    },
+    "Loading older videos…": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Загружаю старые видео…"
+          }
+        }
+      }
+    },
+    "No new videos": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Новых видео нет"
+          }
+        }
+      }
+    },
+    "No videos yet": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Видео пока нет"
+          }
+        }
+      }
+    },
+    "You've watched everything. New videos will show up here.": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Вы посмотрели все. Новые видео появятся здесь."
+          }
+        }
+      }
+    },
+    "Pull down to refresh.": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Потяните вниз, чтобы обновить."
+          }
+        }
+      }
+    },
+    "Show watched": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Показать просмотренные"
+          }
+        }
+      }
+    },
+    "You're all caught up": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Дальше все просмотрено"
+          }
+        }
+      }
+    },
+    "That's every video from your channels": {
+      "localizations": {
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Это все видео ваших каналов"
+          }
+        }
+      }
     }
   }
 }

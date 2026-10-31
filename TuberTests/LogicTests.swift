@@ -18,6 +18,19 @@ final class LogicTests: XCTestCase {
         XCTAssertNil(VideoLink.videoID(from: URL(string: "https://example.com/watch?v=\(id)")!))
     }
 
+    func testFeedPagingStopsAfterEmptyLoads() {
+        var streak = 0
+        streak = FeedPaging.emptyStreak(visibleBefore: 5, visibleAfter: 5, streak: streak)
+        XCTAssertEqual(streak, 1)
+        XCTAssertTrue(FeedPaging.canAutoLoad(hasMore: true, emptyStreak: streak))
+        streak = FeedPaging.emptyStreak(visibleBefore: 5, visibleAfter: 5, streak: streak)
+        streak = FeedPaging.emptyStreak(visibleBefore: 5, visibleAfter: 5, streak: streak)
+        XCTAssertEqual(streak, 3)
+        XCTAssertFalse(FeedPaging.canAutoLoad(hasMore: true, emptyStreak: streak))
+        XCTAssertEqual(FeedPaging.emptyStreak(visibleBefore: 5, visibleAfter: 9, streak: streak), 0)
+        XCTAssertFalse(FeedPaging.canAutoLoad(hasMore: false, emptyStreak: 0))
+    }
+
     @MainActor func testChannelPageHidesHiddenVideos() {
         let a = Video(id: "AAAAAAAAAAA", channelID: "UC1", channelTitle: "C", title: "A")
         let b = Video(id: "BBBBBBBBBBB", channelID: "UC1", channelTitle: "C", title: "B")
