@@ -56,8 +56,20 @@ struct PlayerView: View {
 
                 if let video = model.current {
                     Text(video.title).font(.title3.bold()).padding(.horizontal).padding(.top, 12)
-                    Text(video.published, format: .relative(presentation: .named))
-                        .font(.footnote).foregroundStyle(.secondary).padding(.horizontal).padding(.top, 2)
+                    HStack(spacing: 6) {
+                        if let views = model.viewCount {
+                            Label {
+                                Text(views, format: .number.notation(.compactName))
+                            } icon: {
+                                Image(systemName: "eye")
+                            }
+                            .labelStyle(.titleAndIcon)
+                            .accessibilityLabel(Text("\(views) views"))
+                            Text("·")
+                        }
+                        Text(video.published, format: .relative(presentation: .named))
+                    }
+                    .font(.footnote).foregroundStyle(.secondary).padding(.horizontal).padding(.top, 2)
 
                     controls.padding(.top, 18)
                     secondary(video).padding(.top, 18)

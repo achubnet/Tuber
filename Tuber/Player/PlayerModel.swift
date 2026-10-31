@@ -11,6 +11,7 @@ final class PlayerModel {
     var current: Video?
     var isPresented = false
     var segments: [Segment] = []
+    var viewCount: Int?
     var skippedBadge: String?
     var error: String?
     var isLoading = false
@@ -51,6 +52,7 @@ final class PlayerModel {
         error = nil
         isLoading = true
         segments = []
+        viewCount = nil
         if present { isPresented = true }
 
         var video = try? context.fetch(FetchDescriptor<Video>(predicate: #Predicate { $0.id == videoID })).first
@@ -65,6 +67,10 @@ final class PlayerModel {
         try? context.save()
 
         async let segs = SponsorBlock.segments(videoID: videoID, categories: Settings.skipCategories)
+        Task {
+            let views = await VideoInfo.details(videoID: videoID)?.viewCount
+            if loadID == token { viewCount = views }
+        }
         do {
             let url = try await StreamResolver.playableURL(videoID: videoID)
             guard loadID == token else { return }
