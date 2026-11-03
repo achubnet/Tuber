@@ -21,7 +21,10 @@ final class PlayerModel {
     var rate: Float = 1
     var inBackground = false
     var pipActive = false
-    var hintSymbol: String?
+    var controlsVisible = true
+    var seekBurst: SeekBurst?
+    var audioOptions: [AVMediaSelectionOption] = []
+    var audioOption: AVMediaSelectionOption?
     var boosted = false
     static let rates: [Float] = [0.25, 0.5, 0.75, 1, 1.25, 1.5, 1.75, 2]
 
@@ -32,6 +35,7 @@ final class PlayerModel {
 
     private init() {
         try? AVAudioSession.sharedInstance().setCategory(.playback, mode: .moviePlayback)
+        player.appliesMediaSelectionCriteriaAutomatically = false
         player.addPeriodicTimeObserver(forInterval: CMTime(seconds: 0.5, preferredTimescale: 600), queue: .main) { [weak self] t in
             MainActor.assumeIsolated { self?.tick(t.seconds) }
         }
@@ -53,6 +57,9 @@ final class PlayerModel {
         isLoading = true
         segments = []
         viewCount = nil
+        audioOptions = []
+        audioOption = nil
+        controlsVisible = true
         if present { isPresented = true }
 
         var video = try? context.fetch(FetchDescriptor<Video>(predicate: #Predicate { $0.id == videoID })).first
@@ -74,7 +81,9 @@ final class PlayerModel {
         do {
             let url = try await StreamResolver.playableURL(videoID: videoID)
             guard loadID == token else { return }
-            player.replaceCurrentItem(with: AVPlayerItem(url: url))
+            let item = AVPlayerItem(url: url)
+            player.replaceCurrentItem(with: item)
+            Task { await configureMedia(item, token: token) }
             let start = video.watched ? 0 : video.position
             if start > 5 { await player.seek(to: CMTime(seconds: start - 2, preferredTimescale: 600)) }
             try? AVAudioSession.sharedInstance().setActive(true)
@@ -83,6 +92,7 @@ final class PlayerModel {
             isPlaying = true
             isLoading = false
             updateNowPlaying()
+            scheduleHideControls()
         } catch {
             guard loadID == token else { return }
             isLoading = false
@@ -90,6 +100,26 @@ final class PlayerModel {
         }
         let loaded = await segs
         if loadID == token { segments = loaded }
+    }
+
+    /// Subtitles off; audio track in the app language when the video has one.
+    private func configureMedia(_ item: AVPlayerItem, token: UUID) async {
+        if let subs = try? await item.asset.loadMediaSelectionGroup(for: .legible) { item.select(nil, in: subs) }
+        guard let audio = try? await item.asset.loadMediaSelectionGroup(for: .audible), loadID == token,
+              audio.options.count > 1 else { return }
+        let lang = Bundle.main.preferredLocalizations.first ?? "en"
+        if let match = audio.options.first(where: { $0.locale?.language.languageCode?.identifier == lang }) {
+            item.select(match, in: audio)
+        }
+        audioOptions = audio.options
+        audioOption = item.currentMediaSelection.selectedMediaOption(in: audio)
+    }
+
+    func selectAudio(_ option: AVMediaSelectionOption) {
+        guard let item = player.currentItem,
+              let group = item.asset.mediaSelectionGroup(forMediaCharacteristic: .audible) else { return }
+        item.select(option, in: group)
+        audioOption = option
     }
 
     func retry() {
@@ -103,6 +133,23 @@ final class PlayerModel {
         if isPlaying { player.pause(); saveProgress() } else { player.play() }
         isPlaying.toggle()
         updateNowPlaying()
+        scheduleHideControls()
+    }
+
+    private var controlsTask: Task<Void, Never>?
+    func toggleControls() {
+        controlsVisible.toggle()
+        scheduleHideControls()
+    }
+
+    /// Controls fade out after a few seconds while playing.
+    func scheduleHideControls() {
+        controlsTask?.cancel()
+        guard controlsVisible, isPlaying else { return }
+        controlsTask = Task {
+            try? await Task.sleep(for: .seconds(3))
+            if !Task.isCancelled, isPlaying { controlsVisible = false }
+        }
     }
 
     func seek(to seconds: Double) {
@@ -127,13 +174,21 @@ final class PlayerModel {
         player.rate = on ? 2 : rate
     }
 
-    private var hintTask: Task<Void, Never>?
-    func flashHint(_ symbol: String) {
-        hintSymbol = symbol
-        hintTask?.cancel()
-        hintTask = Task {
-            try? await Task.sleep(for: .seconds(0.6))
-            if !Task.isCancelled { hintSymbol = nil }
+    struct SeekBurst: Equatable {
+        var forward: Bool
+        var seconds: Int
+    }
+
+    /// YouTube-style double tap: 10 s per tap, taps in a row add up.
+    private var burstTask: Task<Void, Never>?
+    func burstSeek(forward: Bool) {
+        if seekBurst?.forward == forward { seekBurst?.seconds += 10 } else { seekBurst = SeekBurst(forward: forward, seconds: 10) }
+        controlsVisible = false
+        seek(by: forward ? 10 : -10)
+        burstTask?.cancel()
+        burstTask = Task {
+            try? await Task.sleep(for: .seconds(0.8))
+            if !Task.isCancelled { seekBurst = nil }
         }
     }
 

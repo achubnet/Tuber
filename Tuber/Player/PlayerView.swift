@@ -6,10 +6,23 @@ struct PlayerView: View {
     @Bindable var model = PlayerModel.shared
     @Query private var channels: [Channel]
     @Environment(\.modelContext) private var context
+    @Environment(\.verticalSizeClass) private var sizeClass
 
     var body: some View {
-        ScrollView {
-            VStack(alignment: .leading, spacing: 0) {
+        if sizeClass == .compact {
+            // Landscape: video only, edge to edge.
+            videoArea(fullscreen: true)
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .background(.black)
+                .ignoresSafeArea()
+                .statusBarHidden()
+                .persistentSystemOverlays(.hidden)
+        } else {
+            portrait
+        }
+    }
+
+    private func videoArea(fullscreen: Bool) -> some View {
                 ZStack(alignment: .topLeading) {
                     VideoSurface(model: model)
                         .aspectRatio(16 / 9, contentMode: .fit)
@@ -22,23 +35,16 @@ struct PlayerView: View {
                         }
                         .frame(maxWidth: .infinity, maxHeight: .infinity)
                     }
-                    Group {
-                        if let symbol = model.hintSymbol {
-                            Image(systemName: symbol).font(.system(size: 34, weight: .semibold))
-                                .frame(maxWidth: .infinity, maxHeight: .infinity,
-                                       alignment: symbol.hasPrefix("goforward") ? .trailing : .leading)
-                                .padding(.horizontal, 40)
-                        } else if model.boosted {
-                            Label("2×", systemImage: "forward.fill").font(.subheadline.weight(.bold))
-                                .padding(.horizontal, 12).padding(.vertical, 6)
-                                .glassEffect(.regular.tint(.black.opacity(0.3)))
-                                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
-                                .padding(.top, 10)
-                        }
+                    VideoOverlay(model: model, fullscreen: fullscreen)
+                    if model.boosted {
+                        Label("2×", systemImage: "forward.fill").font(.subheadline.weight(.bold))
+                            .padding(.horizontal, 12).padding(.vertical, 6)
+                            .glassEffect(.regular.tint(.black.opacity(0.3)))
+                            .foregroundStyle(.white)
+                            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+                            .padding(.top, 10)
+                            .allowsHitTesting(false)
                     }
-                    .foregroundStyle(.white)
-                    .allowsHitTesting(false)
-                    .animation(.easeOut(duration: 0.15), value: model.hintSymbol)
                     if let badge = model.skippedBadge {
                         Label(badge, systemImage: "forward.fill")
                             .font(.caption.weight(.semibold))
@@ -51,6 +57,12 @@ struct PlayerView: View {
                 }
                 .aspectRatio(16 / 9, contentMode: .fit)
                 .animation(.easeInOut, value: model.skippedBadge)
+    }
+
+    private var portrait: some View {
+        ScrollView {
+            VStack(alignment: .leading, spacing: 0) {
+                videoArea(fullscreen: false)
 
                 SegmentBar(model: model).padding(.horizontal).padding(.top, 14)
 
@@ -71,8 +83,7 @@ struct PlayerView: View {
                     }
                     .font(.footnote).foregroundStyle(.secondary).padding(.horizontal).padding(.top, 2)
 
-                    controls.padding(.top, 18)
-                    secondary(video).padding(.top, 18)
+                    actions(video).padding(.top, 16)
                     channelRow(video).padding(.top, 20)
                 }
             }
@@ -80,8 +91,9 @@ struct PlayerView: View {
         .presentationDragIndicator(.visible)
     }
 
-    private var controls: some View {
-        HStack {
+    /// Glass action buttons under the video, evenly spread across the width.
+    private func actions(_ video: Video) -> some View {
+        HStack(alignment: .top, spacing: 0) {
             Menu {
                 Picker("Playback speed", selection: Binding(get: { model.rate }, set: { model.setRate($0) })) {
                     ForEach(PlayerModel.rates.reversed(), id: \.self) { r in
@@ -89,40 +101,32 @@ struct PlayerView: View {
                     }
                 }
             } label: {
-                Text(String(format: "%g×", model.rate))
-                    .font(.subheadline.weight(.semibold)).monospacedDigit().frame(width: 46)
+                ActionLabel(icon: "gauge.with.dots.needle.67percent", title: Text(verbatim: String(format: "%g×", model.rate)))
             }
-            Spacer()
-            Button { model.seek(by: -10) } label: { Image(systemName: "gobackward.10").font(.title2) }
-            Spacer()
-            Button { model.togglePlay() } label: {
-                Image(systemName: model.isPlaying ? "pause.fill" : "play.fill").font(.system(size: 40))
-                    .contentTransition(.symbolEffect(.replace))
-            }
-            Spacer()
-            Button { model.seek(by: 10) } label: { Image(systemName: "goforward.10").font(.title2) }
-            Spacer()
-            Button { model.playNext() } label: { Image(systemName: "forward.end.fill").font(.title3) }
-                .frame(width: 46)
-        }
-        .foregroundStyle(.primary)
-        .padding(.horizontal, 24)
-    }
-
-    private func secondary(_ video: Video) -> some View {
-        HStack {
+            .menuStyle(.button).buttonStyle(.borderless).menuIndicator(.hidden)
+            Button { model.playNext() } label: { ActionLabel(icon: "forward.end.fill", title: Text("Next")) }
             Button { video.watchLater.toggle(); try? context.save() } label: {
-                Image(systemName: video.watchLater ? "clock.fill" : "clock")
+                ActionLabel(icon: video.watchLater ? "clock.fill" : "clock", title: Text("Later"))
             }
-            .accessibilityLabel("Watch later")
-            Spacer()
-            RoutePicker().frame(width: 30, height: 30)
-            Spacer()
-            ShareLink(item: video.shareURL) { Image(systemName: "square.and.arrow.up") }
+            if model.audioOptions.count > 1 {
+                Menu {
+                    Picker("Audio track", selection: Binding(get: { model.audioOption },
+                                                             set: { if let o = $0 { model.selectAudio(o) } })) {
+                        ForEach(model.audioOptions, id: \.self) { Text($0.displayName).tag(Optional($0)) }
+                    }
+                } label: {
+                    ActionLabel(icon: "waveform", title: Text(model.audioOption.flatMap { o in
+                        o.locale.flatMap { $0.localizedString(forLanguageCode: $0.language.languageCode?.identifier ?? "") }
+                    }?.capitalized ?? String(localized: "Audio track")))
+                }
+                .menuStyle(.button).buttonStyle(.borderless).menuIndicator(.hidden)
+            }
+            ShareLink(item: video.shareURL) { ActionLabel(icon: "square.and.arrow.up", title: Text("Share")) }
+            ActionLabel(icon: "airplay.video", title: Text("AirPlay"))
+                .overlay(alignment: .top) { RoutePicker().frame(width: 48, height: 48).opacity(0.02) }
         }
-        .font(.title3)
-        .foregroundStyle(.secondary)
-        .padding(.horizontal, 44)
+        .buttonStyle(.plain)
+        .padding(.horizontal, 8)
     }
 
     private func channelRow(_ video: Video) -> some View {
@@ -143,6 +147,25 @@ struct PlayerView: View {
         }
         .padding(.horizontal)
         .padding(.bottom, 30)
+    }
+}
+
+/// Red icon in a glass circle with a caption under it.
+private struct ActionLabel: View {
+    let icon: String
+    let title: Text
+
+    var body: some View {
+        VStack(spacing: 6) {
+            Image(systemName: icon)
+                .font(.system(size: 18, weight: .medium))
+                .foregroundStyle(.red)
+                .frame(width: 48, height: 48)
+                .glassEffect(.regular.interactive(), in: .circle)
+            title.font(.caption).foregroundStyle(Color(.secondaryLabel)).lineLimit(1).minimumScaleFactor(0.8)
+        }
+        .frame(maxWidth: .infinity)
+        .contentShape(Rectangle())
     }
 }
 
