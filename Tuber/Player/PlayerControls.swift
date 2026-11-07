@@ -60,26 +60,88 @@ struct VideoOverlay: View {
     var body: some View {
         ZStack {
             if model.controlsVisible, !model.isLoading, model.error == nil {
-                Color.black.opacity(0.3).allowsHitTesting(false)
+                // While controls are up this layer gets the touches, so taps on the video are handled here too.
+                GeometryReader { geo in
+                    Color.black.opacity(fullscreen ? 0.4 : 0.3)
+                        .contentShape(Rectangle())
+                        .gesture(SpatialTapGesture().onEnded { model.tap(forward: $0.location.x > geo.size.width / 2) })
+                }
                 Button { model.togglePlay() } label: {
                     PlayPauseGlyph(isPlaying: model.isPlaying, onVideo: true)
                         .frame(width: 54, height: 54).padding(20).contentShape(Rectangle())
                 }
                 .buttonStyle(.plain)
                 .accessibilityLabel(model.isPlaying ? "Pause" : "Play")
-                Button { Orientation.set(landscape: !fullscreen) } label: {
-                    Image(systemName: fullscreen ? "arrow.down.right.and.arrow.up.left" : "arrow.up.left.and.arrow.down.right")
-                        .font(.body.weight(.semibold)).foregroundStyle(.white)
-                        .padding(12).contentShape(Rectangle())
+                if fullscreen {
+                    FullscreenBar(model: model)
+                } else {
+                    fullscreenButton.frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottomTrailing)
                 }
-                .buttonStyle(.plain)
-                .accessibilityLabel("Full screen")
-                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottomTrailing)
             }
             if let burst = model.seekBurst { SeekRipple(burst: burst).transition(.opacity) }
         }
         .animation(.easeOut(duration: 0.2), value: model.controlsVisible)
         .animation(.easeOut(duration: 0.2), value: model.seekBurst)
+    }
+
+    private var fullscreenButton: some View {
+        Button { Orientation.set(landscape: !fullscreen) } label: {
+            Image(systemName: fullscreen ? "arrow.down.right.and.arrow.up.left" : "arrow.up.left.and.arrow.down.right")
+                .font(.body.weight(.semibold)).foregroundStyle(.white)
+                .padding(12).contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+        .accessibilityLabel("Full screen")
+    }
+}
+
+/// Landscape controls: title on top, seek bar and buttons at the bottom.
+private struct FullscreenBar: View {
+    @Bindable var model: PlayerModel
+
+    var body: some View {
+        VStack(spacing: 0) {
+            Text(model.current?.title ?? "")
+                .font(.headline).foregroundStyle(.white).lineLimit(1)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(.horizontal, 20).padding(.top, 14)
+                .allowsHitTesting(false)
+            Spacer()
+            HStack(spacing: 6) {
+                Menu {
+                    Picker("Playback speed", selection: Binding(get: { model.rate }, set: { model.setRate($0) })) {
+                        ForEach(PlayerModel.rates.reversed(), id: \.self) { r in
+                            Text(r == 1 ? String(localized: "Normal") : String(format: "%g×", r)).tag(r)
+                        }
+                    }
+                } label: { chip(Text(verbatim: String(format: "%g×", model.rate))) }
+                if model.audioOptions.count > 1 {
+                    Menu {
+                        Picker("Audio track", selection: Binding(get: { model.audioOption },
+                                                                 set: { if let o = $0 { model.selectAudio(o) } })) {
+                            ForEach(model.audioOptions, id: \.self) { Text($0.displayName).tag(Optional($0)) }
+                        }
+                    } label: { chip(Image(systemName: "waveform")) }
+                    .accessibilityLabel("Audio track")
+                }
+                Spacer()
+                Button { model.playNext() } label: { chip(Image(systemName: "forward.end.fill")) }
+                    .accessibilityLabel("Next")
+                Button { Orientation.set(landscape: false) } label: { chip(Image(systemName: "arrow.down.right.and.arrow.up.left")) }
+                    .accessibilityLabel("Full screen")
+            }
+            .menuStyle(.button).menuIndicator(.hidden)
+            .buttonStyle(.plain)
+            SegmentBar(model: model).padding(.top, 2)
+        }
+        .padding(.horizontal, 20).padding(.bottom, 10)
+        .environment(\.colorScheme, .dark)
+    }
+
+    private func chip(_ content: some View) -> some View {
+        content.font(.subheadline.weight(.semibold)).foregroundStyle(.white)
+            .frame(minWidth: 40, minHeight: 36).padding(.horizontal, 4)
+            .contentShape(Rectangle())
     }
 }
 
@@ -109,6 +171,35 @@ struct SeekRipple: View {
             .frame(maxWidth: .infinity, alignment: burst.forward ? .trailing : .leading)
         }
         .allowsHitTesting(false)
+    }
+}
+
+/// Hosts SwiftUI above a UIKit view so its controls get touches; while inactive, touches go to the view below.
+struct PassthroughHost<Content: View>: UIViewRepresentable {
+    var isActive: () -> Bool
+    @ViewBuilder var content: Content
+
+    func makeUIView(context: Context) -> Container {
+        let host = UIHostingController(rootView: content)
+        host.view.backgroundColor = .clear
+        host.sizingOptions = []
+        let v = Container()
+        v.host = host
+        v.isActive = isActive
+        host.view.frame = v.bounds
+        host.view.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        v.addSubview(host.view)
+        return v
+    }
+
+    func updateUIView(_ v: Container, context: Context) { v.host?.rootView = content }
+
+    final class Container: UIView {
+        var host: UIHostingController<Content>?
+        var isActive: () -> Bool = { true }
+        override func hitTest(_ point: CGPoint, with event: UIEvent?) -> UIView? {
+            isActive() ? super.hitTest(point, with: event) : nil
+        }
     }
 }
 

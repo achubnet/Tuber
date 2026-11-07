@@ -6,6 +6,7 @@ struct VideoDetails: Sendable {
     let channelTitle: String
     let duration: Double?
     var viewCount: Int?
+    var description: String?
 }
 
 enum VideoInfo {
@@ -16,6 +17,7 @@ enum VideoInfo {
                             channelID: d["channelId"] as? String ?? "",
                             channelTitle: d["author"] as? String ?? "",
                             duration: (d["lengthSeconds"] as? String).flatMap(Double.init),
-                            viewCount: (d["viewCount"] as? String).flatMap(Int.init))
+                            viewCount: (d["viewCount"] as? String).flatMap(Int.init),
+                            description: d["shortDescription"] as? String)
     }
 }

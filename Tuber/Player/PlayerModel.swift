@@ -12,6 +12,7 @@ final class PlayerModel {
     var isPresented = false
     var segments: [Segment] = []
     var viewCount: Int?
+    var details: String?
     var skippedBadge: String?
     var error: String?
     var isLoading = false
@@ -57,6 +58,7 @@ final class PlayerModel {
         isLoading = true
         segments = []
         viewCount = nil
+        details = nil
         audioOptions = []
         audioOption = nil
         controlsVisible = true
@@ -75,8 +77,8 @@ final class PlayerModel {
 
         async let segs = SponsorBlock.segments(videoID: videoID, categories: Settings.skipCategories)
         Task {
-            let views = await VideoInfo.details(videoID: videoID)?.viewCount
-            if loadID == token { viewCount = views }
+            let d = await VideoInfo.details(videoID: videoID)
+            if loadID == token { viewCount = d?.viewCount; details = d?.description }
         }
         do {
             let url = try await StreamResolver.playableURL(videoID: videoID)
@@ -136,7 +138,28 @@ final class PlayerModel {
         scheduleHideControls()
     }
 
+    private var lastTap = Date.distantPast
+    private var pendingToggle: Task<Void, Never>?
+
+    /// One tap toggles controls after a short wait; a second tap turns it into a seek, and further taps keep seeking.
+    func tap(forward: Bool) {
+        if seekBurst != nil || Date.now.timeIntervalSince(lastTap) < 0.3 {
+            pendingToggle?.cancel()
+            lastTap = .distantPast
+            burstSeek(forward: forward)
+            return
+        }
+        lastTap = .now
+        pendingToggle = Task {
+            try? await Task.sleep(for: .seconds(0.3))
+            if !Task.isCancelled { toggleControls() }
+        }
+    }
+
     private var controlsTask: Task<Void, Never>?
+    /// Keeps the controls up while the user drags the seek bar or opens a menu.
+    func holdControls() { controlsTask?.cancel() }
+
     func toggleControls() {
         controlsVisible.toggle()
         scheduleHideControls()
@@ -204,6 +227,9 @@ final class PlayerModel {
     // MARK: Ticking
 
     private func tick(_ t: Double) {
+        // Our own controls replace AVKit's, so the screen would dim mid-video; keep it on while playing.
+        let awake = player.timeControlStatus == .playing && !inBackground
+        if UIApplication.shared.isIdleTimerDisabled != awake { UIApplication.shared.isIdleTimerDisabled = awake }
         guard t.isFinite, !isLoading, let current else { return }
         time = t
         if let d = player.currentItem?.duration.seconds, d.isFinite, d > 0 {

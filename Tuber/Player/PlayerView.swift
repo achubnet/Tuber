@@ -35,7 +35,9 @@ struct PlayerView: View {
                         }
                         .frame(maxWidth: .infinity, maxHeight: .infinity)
                     }
-                    VideoOverlay(model: model, fullscreen: fullscreen)
+                    PassthroughHost(isActive: { [model] in model.controlsVisible && !model.isLoading && model.error == nil }) {
+                        VideoOverlay(model: model, fullscreen: fullscreen)
+                    }
                     if model.boosted {
                         Label("2×", systemImage: "forward.fill").font(.subheadline.weight(.bold))
                             .padding(.horizontal, 12).padding(.vertical, 6)
@@ -60,10 +62,11 @@ struct PlayerView: View {
     }
 
     private var portrait: some View {
-        ScrollView {
+        VStack(spacing: 0) {
+            // Video stays pinned while the details scroll under it.
+            videoArea(fullscreen: false)
+            ScrollView {
             VStack(alignment: .leading, spacing: 0) {
-                videoArea(fullscreen: false)
-
                 SegmentBar(model: model).padding(.horizontal).padding(.top, 14)
 
                 if let video = model.current {
@@ -85,7 +88,12 @@ struct PlayerView: View {
 
                     actions(video).padding(.top, 16)
                     channelRow(video).padding(.top, 20)
+                    if let text = model.details?.trimmingCharacters(in: .whitespacesAndNewlines), !text.isEmpty {
+                        DescriptionBox(text: text) { model.seek(to: $0); if !model.isPlaying { model.togglePlay() } }
+                            .padding(.horizontal).padding(.bottom, 30)
+                    }
                 }
+            }
             }
         }
         .presentationDragIndicator(.visible)
@@ -146,7 +154,57 @@ struct PlayerView: View {
             .tint(subscribed ? .secondary : .red)
         }
         .padding(.horizontal)
-        .padding(.bottom, 30)
+        .padding(.bottom, 20)
+    }
+}
+
+/// Video description with tappable timecodes (seek) and links.
+private struct DescriptionBox: View {
+    let text: String
+    let seek: (Double) -> Void
+    @State private var expanded = false
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Text(Self.linked(text))
+                .font(.subheadline)
+                .tint(.red)
+                .lineLimit(expanded ? nil : 4)
+                .environment(\.openURL, OpenURLAction { url in
+                    if url.scheme == "tuber-seek", let s = Double(url.host() ?? "") { seek(s); return .handled }
+                    // Other YouTube videos open in the app.
+                    if let id = VideoLink.videoID(from: url) { Deeplink.open(id); return .handled }
+                    return .systemAction
+                })
+            if text.count > 180 || text.split(separator: "\n").count > 4 {
+                Button(expanded ? "Less" : "More") { withAnimation { expanded.toggle() } }
+                    .font(.subheadline.weight(.semibold)).foregroundStyle(.secondary)
+            }
+        }
+        .padding(12)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(.quaternary.opacity(0.5), in: .rect(cornerRadius: 14))
+    }
+
+    /// Marks 1:23 / 1:02:03 as seek links and web addresses as links.
+    static func linked(_ text: String) -> AttributedString {
+        var result = AttributedString(text)
+        let ns = text as NSString
+        if let detector = try? NSDataDetector(types: NSTextCheckingResult.CheckingType.link.rawValue) {
+            for m in detector.matches(in: text, range: NSRange(location: 0, length: ns.length)) {
+                guard let url = m.url, let r = Range(m.range, in: text), let ar = Range(r, in: result) else { continue }
+                result[ar].link = url
+            }
+        }
+        for m in text.matches(of: /\b(?:(\d{1,2}):)?(\d{1,2}):(\d{2})\b/) {
+            let h: Double = m.1.flatMap { Double($0) } ?? 0
+            let mm: Double = Double(m.2) ?? 0
+            let ss: Double = Double(m.3) ?? 0
+            let total = Int(h * 3600 + mm * 60 + ss)
+            guard ss < 60, let ar = Range(m.range, in: result), let url = URL(string: "tuber-seek://\(total)") else { continue }
+            result[ar].link = url
+        }
+        return result
     }
 }
 
@@ -194,8 +252,8 @@ struct SegmentBar: View {
                 .frame(maxHeight: .infinity)
                 .contentShape(Rectangle())
                 .gesture(DragGesture(minimumDistance: 0)
-                    .onChanged { dragValue = min(max(0, $0.location.x / w), 1) * duration }
-                    .onEnded { _ in if let v = dragValue { model.seek(to: v) }; dragValue = nil })
+                    .onChanged { dragValue = min(max(0, $0.location.x / w), 1) * duration; model.holdControls() }
+                    .onEnded { _ in if let v = dragValue { model.seek(to: v) }; dragValue = nil; model.scheduleHideControls() })
             }
             .frame(height: 16)
             .animation(.easeOut(duration: 0.15), value: dragValue == nil)

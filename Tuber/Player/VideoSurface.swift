@@ -11,6 +11,7 @@ struct VideoSurface: UIViewControllerRepresentable {
         let vc = AVPlayerViewController()
         vc.player = model.player
         vc.showsPlaybackControls = false
+        vc.allowsVideoFrameAnalysis = false
         vc.allowsPictureInPicturePlayback = true
         vc.canStartPictureInPictureAutomaticallyFromInline = true
         vc.updatesNowPlayingInfoCenter = false
@@ -50,40 +51,11 @@ struct VideoSurface: UIViewControllerRepresentable {
             }
         }
 
-        private var lastTap = Date.distantPast
         private var boostEnded = Date.distantPast
-        private var pendingToggle: Task<Void, Never>?
 
-        /// One tap toggles controls after a short wait; a second tap turns it into a seek, and further taps keep seeking.
         @objc private func tapped(_ g: UITapGestureRecognizer) {
             guard let view = g.view, !model.boosted, Date.now.timeIntervalSince(boostEnded) > 0.3 else { return }
-            let p = g.location(in: view), b = view.bounds
-            let forward = p.x > b.midX
-            // The SwiftUI overlay doesn't get touches over this view, so its buttons are hit here.
-            if model.controlsVisible, model.seekBurst == nil {
-                if hypot(p.x - b.midX, p.y - b.midY) < 50 {
-                    pendingToggle?.cancel()
-                    lastTap = .distantPast
-                    model.togglePlay()
-                    return
-                }
-                if p.x > b.maxX - 56, p.y > b.maxY - 56 {
-                    pendingToggle?.cancel()
-                    Orientation.set(landscape: !(view.window?.windowScene?.effectiveGeometry.interfaceOrientation.isLandscape ?? false))
-                    return
-                }
-            }
-            if model.seekBurst != nil || Date.now.timeIntervalSince(lastTap) < 0.3 {
-                pendingToggle?.cancel()
-                lastTap = .distantPast
-                model.burstSeek(forward: forward)
-                return
-            }
-            lastTap = .now
-            pendingToggle = Task {
-                try? await Task.sleep(for: .seconds(0.3))
-                if !Task.isCancelled { model.toggleControls() }
-            }
+            model.tap(forward: g.location(in: view).x > view.bounds.midX)
         }
 
         @objc private func held(_ g: UILongPressGestureRecognizer) {
